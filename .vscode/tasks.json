@@ -6,7 +6,7 @@
         {
             "label": "compile current file",
             "type": "shell",
-            "command": "gcc",
+            "command": "g++",
             "args": [
                 "${file}",
                 "-lssh2"

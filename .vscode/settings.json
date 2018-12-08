@@ -1,0 +1,23 @@
+{
+    "files.associations": {
+        "libssh2_config.h": "c",
+        "new": "cpp",
+        "*.tcc": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "cmath": "cpp",
+        "cstdint": "cpp",
+        "cstdio": "cpp",
+        "cstdlib": "cpp",
+        "cwchar": "cpp",
+        "exception": "cpp",
+        "initializer_list": "cpp",
+        "iosfwd": "cpp",
+        "limits": "cpp",
+        "string_view": "cpp",
+        "cinttypes": "cpp",
+        "type_traits": "cpp",
+        "typeinfo": "cpp",
+        "stdexcept": "cpp"
+    }
+}
