@@ -28,6 +28,12 @@
         "array": "cpp",
         "memory": "cpp",
         "tuple": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "unordered_map": "cpp",
+        "vector": "cpp",
+        "fstream": "cpp",
+        "optional": "cpp",
+        "sstream": "cpp",
+        "cstdarg": "cpp"
     }
 }

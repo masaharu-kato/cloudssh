@@ -11,10 +11,14 @@ namespace libssh2 {
 
     class Socket {
         libssh2_socket_t sock;
+        struct sockaddr_in sin;
 
-        Socket(const char* hostaddr, uint16_t port, int domain, int type, int protocol) : 
-            sock(::socket(domain, type, protocol))
+        Socket(const char* hostaddr, uint16_t port, int domain, int type, int protocol)
         {
+            sock = ::socket(domain, type, protocol);
+            if(sock == -1) {
+                throw new std::runtime_error("Socket error.\n");
+            }
             if(hostaddr) {
                 connect(hostaddr, port);
             }
@@ -42,10 +46,11 @@ namespace libssh2 {
 
         void connect(const char* hostaddr, uint16_t port) {
 
-            struct sockaddr_in sin;
             sin.sin_family = AF_INET;
             sin.sin_port = htons(port);
             sin.sin_addr.s_addr = inet_addr(hostaddr);
+
+            printf("setting connection...\n");
 
             if(::connect(sock, (struct sockaddr*)(&sin), sizeof(struct sockaddr_in))) {
                 throw new std::runtime_error("Failed to connect.\n");

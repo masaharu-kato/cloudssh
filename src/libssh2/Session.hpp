@@ -7,6 +7,7 @@ namespace libssh2 {
     class Session {
         std::shared_ptr<Libssh2> _libssh2;
         LIBSSH2_SESSION *session;
+        std::shared_ptr<Socket> sock;
 
         Session(std::shared_ptr<Libssh2> _libssh2)
          : _libssh2(_libssh2), session(libssh2_session_init())
@@ -25,8 +26,9 @@ namespace libssh2 {
         /* Create a session instance and start it up. This will trade welcome
         * banners, exchange keys, and setup crypto, compression, and MAC layers.
         */
-        bool handshake(const Socket& sock) {
-            return !libssh2_session_handshake(session, sock);
+        bool handshake(std::shared_ptr<Socket> _sock) {
+            sock = _sock;
+            return !libssh2_session_handshake(session, *sock);
         }
 
         /* 

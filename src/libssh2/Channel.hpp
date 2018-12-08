@@ -1,6 +1,7 @@
 #pragma once
 #include "Libssh2.hpp"
 #include "Session.hpp"
+#include <vector>
 
 namespace libssh2 {
 
@@ -9,12 +10,20 @@ namespace libssh2 {
         LIBSSH2_CHANNEL *channel;
 
         Channel(std::shared_ptr<Session> session) : 
-            session(session),
-            channel(libssh2_channel_open_session(*session)) {
-             if(!channel) {
+            session(session)
+        {
+             if(!(channel = libssh2_channel_open_session(*session))) {
                 throw new std::runtime_error("Unable to open a session\n");
              }
         }
+        
+        // Channel(LIBSSH2_SESSION *_session) : 
+        //     session(nullptr)
+        // {
+        //      if(!(channel = libssh2_channel_open_session(_session))) {
+        //         throw new std::runtime_error("Unable to open a session\n");
+        //      }
+        // }
 
     public:
         ~Channel() {
@@ -25,6 +34,12 @@ namespace libssh2 {
         static auto create(std::shared_ptr<Session> session) {
             return std::shared_ptr<Channel>(new Channel(session));
         }
+        
+        // static auto create(LIBSSH2_SESSION *session) {
+        //     return std::shared_ptr<Channel>(new Channel(session));
+        // }
+
+        
 
         /* 
          * Some environment variables may be set,
@@ -44,12 +59,24 @@ namespace libssh2 {
          * See /etc/termcap for more options
          */
         void shell(const char* type = "vanilla") {
-            if (libssh2_channel_request_pty(channel, type)) {
+            if(libssh2_channel_request_pty(channel, type)) {
                 throw new std::runtime_error("Failed requesting pty\n");
             }
-            if (libssh2_channel_shell(channel)) {
+            if(libssh2_channel_shell(channel)) {
                 throw new std::runtime_error("Unable to request shell on allocated pty\n");
             }
+        }
+
+        auto write(const std::vector<char>& in) {
+            return libssh2_channel_write(channel, in.data(), in.size());
+        }
+
+        auto write(char c) {
+            return libssh2_channel_write(channel, &c, 1);
+        }
+
+        auto read(std::vector<char>& out){
+		    return libssh2_channel_read(channel, out.data(), out.capacity());
         }
 
         operator LIBSSH2_CHANNEL*() const {
