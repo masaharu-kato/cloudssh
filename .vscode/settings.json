@@ -18,6 +18,16 @@
         "cinttypes": "cpp",
         "type_traits": "cpp",
         "typeinfo": "cpp",
-        "stdexcept": "cpp"
+        "stdexcept": "cpp",
+        "cwctype": "cpp",
+        "iostream": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "streambuf": "cpp",
+        "system_error": "cpp",
+        "array": "cpp",
+        "memory": "cpp",
+        "tuple": "cpp",
+        "utility": "cpp"
     }
 }
