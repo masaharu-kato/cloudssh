@@ -13,7 +13,7 @@ namespace libssh2 {
 
         LIBSSH2_CHANNEL *channel;
         std::shared_ptr<Session> session;
-        std::shared_ptr<Listener> listener;
+    //    std::shared_ptr<Listener> listener;
 
         Channel(std::shared_ptr<Session> session) : session(session) {
              if(!(channel = libssh2_channel_open_session(*session))) {
@@ -27,11 +27,11 @@ namespace libssh2 {
              }
         }
 
-        Channel(std::shared_ptr<Listener> listener) : listener(listener) {
-             if(!(channel = libssh2_channel_forward_accept(*listener))) {
-                throw new std::runtime_error("Unable to open a session from listener\n");
-             }
-        }
+        // Channel(std::shared_ptr<Listener> listener) : listener(listener) {
+        //      if(!(channel = libssh2_channel_forward_accept(*listener))) {
+        //         throw new std::runtime_error("Unable to open a session from listener\n");
+        //      }
+        // }
 
     public:
         using StreamID = int;
@@ -249,12 +249,12 @@ namespace libssh2 {
         return std::shared_ptr<Channel>(new Channel(shared_from_this(), host, port, shost, sport));
     }
 
-    /*
-    * create new channel from listener
-    */
-    auto Listener::new_channel() {
-        return std::shared_ptr<Channel>(new Channel(shared_from_this()));
-    }
+    // /*
+    // * create new channel from listener
+    // */
+    // auto Listener::new_channel() {
+    //     return std::shared_ptr<Channel>(new Channel(shared_from_this()));
+    // }
 
 
 }

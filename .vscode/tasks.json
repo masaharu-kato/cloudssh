@@ -9,6 +9,8 @@
             "command": "g++",
             "args": [
                 "${file}",
+                "-Wall",
+                "-Wextra",
                 "-lssh2"
             ],
             "group": {

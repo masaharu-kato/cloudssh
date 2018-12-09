@@ -15,7 +15,7 @@ namespace libssh2 {
         std::shared_ptr<Socket> sock;
 
         Session(std::shared_ptr<Libssh2> _libssh2)
-         : _libssh2(_libssh2), session(libssh2_session_init())
+         : session(libssh2_session_init()), _libssh2(_libssh2)
         {}
 
     public:
