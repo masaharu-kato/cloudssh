@@ -9,15 +9,16 @@ using namespace libssh2;
 #include <sys/stropts.h>
 
 std::shared_ptr<Channel> connect_to_ssh(
-    const char* hostname,
-    const char* username,
-    const char* password
+    Socket::HostAddr hostname,
+    Socket::Port port,
+    std::string username,
+    std::string password
 ) {
     auto libssh2 = Libssh2::create();
 
-    auto socket = Socket::create(hostname, 22);
+    auto socket = Socket::create(hostname, port);
 
-    auto session = Session::create(libssh2);
+    auto session = libssh2->new_session();
 
     if(!session->handshake(socket)) {
         std::cerr << "Failed to establish SSH connection.\n";
@@ -34,7 +35,7 @@ std::shared_ptr<Channel> connect_to_ssh(
         return nullptr;
     }
 
-    auto channel = Channel::create(session);
+    auto channel = session->new_channel();
     channel->shell();
 
     return channel;
@@ -45,13 +46,13 @@ std::shared_ptr<Channel> connect_to_ssh(
 int main(void){
 
     auto channel = connect_to_ssh(
-        "127.0.0.1",
+        "127.0.0.1", 22,
         "test",
         "hogehoge"
     );
     if(!channel) return -1; 
 
-    channel->unset_blocking();
+    channel->clear_blocking();
 
     std::cout << "Ready...\n";
 

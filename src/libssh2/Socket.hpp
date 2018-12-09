@@ -9,12 +9,22 @@ namespace libssh2 {
 
     using SocketAddress = struct sockaddr_in;
 
-    class Socket {
+    class Socket : public std::enable_shared_from_this<Socket> {
+    public:
+        using HostAddr = const char*;
+        using Port = int16_t;
+
+    private:
         libssh2_socket_t sock;
         struct sockaddr_in sin;
 
-        Socket(const char* hostaddr, uint16_t port, int domain, int type, int protocol)
-        {
+        Socket(
+            HostAddr hostaddr, 
+            Port port,
+            int domain   = AF_INET,
+            int type     = SOCK_STREAM,
+            int protocol = 0
+        ) {
             sock = ::socket(domain, type, protocol);
             if(sock == -1) {
                 throw new std::runtime_error("Socket error.\n");
@@ -29,19 +39,13 @@ namespace libssh2 {
             close(sock);
         }
 
-        /* 
-         * Create new Socket instance
-         * Ultra basic "connect to port 22 on localhost".  Your code is
-         * responsible for creating the socket establishing the connection
-         */
-        static auto create(
-            const char* hostaddr = NULL,
-            uint16_t port = 0,
-            int domain = AF_INET,
-            int type = SOCK_STREAM,
-            int protocol = 0
-        ) {
-            return std::shared_ptr<Socket>(new Socket(hostaddr, port, domain, type, protocol));
+        auto operator &() {
+            return shared_from_this();
+        }
+
+        template <class... Args>
+        static auto create(Args&&... args) {
+            return std::shared_ptr<Socket>(new Socket(args...));
         }
 
         void connect(const char* hostaddr, uint16_t port) {

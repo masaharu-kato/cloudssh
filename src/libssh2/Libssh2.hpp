@@ -1,6 +1,5 @@
 #pragma once
 #include <libssh2.h>
-
 #include <stdexcept>
 #include <exception>
 #include <memory>
@@ -9,7 +8,7 @@ namespace libssh2 {
 
     class Session;
 
-    class Libssh2 {
+    class Libssh2 : public std::enable_shared_from_this<Libssh2>  {
     private:
         Libssh2() {
             if(libssh2_init(0)){
@@ -21,6 +20,9 @@ namespace libssh2 {
         ~Libssh2() {
             libssh2_exit();
         }
+
+        auto new_session();
+
 
         static std::shared_ptr<Libssh2> ptr;
 
