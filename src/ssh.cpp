@@ -74,7 +74,6 @@ int main(void){
         if(n_obuf_read > 0) {
             printf("%s", obuf.data());
             fflush(stdout);
-        //    fwrite(obuf.data(), 1, n_obuf_read, stdout);
         }
         if(n_obuf_read < 0) printf("read error");
 
@@ -82,8 +81,7 @@ int main(void){
         FD_SET(STDIN_FILENO, &readfds);
         if(select(1, &readfds, NULL, NULL, &timeout)){
             int c = getchar();
-            if(c > 0){
-            //    printf("you entered %c ", c);   
+            if(c > 0){ 
                 auto st = channel->write(char(c));
                 if(st < 0) printf("write error");
             }
