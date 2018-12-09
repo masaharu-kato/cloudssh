@@ -11,22 +11,32 @@ namespace libssh2 {
         friend Session;
         friend Listener;
 
-        LIBSSH2_CHANNEL *channel;
+    protected:
+        LIBSSH2_CHANNEL *channel = NULL;
         std::shared_ptr<Session> session;
     //    std::shared_ptr<Listener> listener;
 
+        auto open_channel() {
+            return channel = libssh2_channel_open_session(*session);
+        }
+
+        /*
+         * default constructor (for inheritanced use)
+         */ 
+        Channel() = default;
+
+        /*
+         * construct channel for shell from session
+         */
         Channel(std::shared_ptr<Session> session) : session(session) {
-             if(!(channel = libssh2_channel_open_session(*session))) {
+             if(!open_channel()) {
                 throw new std::runtime_error("Unable to open a session from session\n");
              }
         }
-
-        Channel(std::shared_ptr<Session> session, const char* host, int port, const char* shost, int sport) : session(session) {
-             if(!(channel = libssh2_channel_direct_tcpip_ex(*session, host, port, shost, sport))) {
-                throw new std::runtime_error("Unable to open a session from session\n");
-             }
-        }
-
+        
+        /*
+         * construct channel for shell from listener
+         */
         // Channel(std::shared_ptr<Listener> listener) : listener(listener) {
         //      if(!(channel = libssh2_channel_forward_accept(*listener))) {
         //         throw new std::runtime_error("Unable to open a session from listener\n");
@@ -240,13 +250,6 @@ namespace libssh2 {
     */
     auto Session::new_channel() {
         return std::shared_ptr<Channel>(new Channel(shared_from_this()));
-    }
-
-    /*
-    * create new channel from session using direct TCP/IP
-    */
-    auto Session::new_channel_tcpip(const char* host, int port, const char* shost, int sport) {
-        return std::shared_ptr<Channel>(new Channel(shared_from_this(), host, port, shost, sport));
     }
 
     // /*

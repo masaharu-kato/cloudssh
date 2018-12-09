@@ -1,4 +1,4 @@
-#include "libssh2/ShellSSH.hpp"
+#include "libssh2/SSH.hpp"
 using namespace libssh2;
 
 #include <iostream>
@@ -7,12 +7,14 @@ using namespace libssh2;
 #include <sys/stropts.h>
 
 
-int main(void){
+int main(){
+
+    const char* command = "ls -la /";
 
     /*
      * Connect to SSH by password authentication
      */
-    auto ssh = std::make_shared<ShellSSH>(
+    auto ssh = std::make_shared<SSH>(
         "127.0.0.1", 22,
         "test",
         "hogehoge"
@@ -23,25 +25,10 @@ int main(void){
         return -1;
     }
 
-    /*
-     * Setting STDIN buffering options
-     */
-    ssh->clear_blocking();
-
-    fd_set readfds;
-    FD_ZERO(&readfds);
-
-    struct timeval timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 0;
-    
-
-    system("stty -echo");
-    system("stty -icanon");
-    
+    ssh->exec(command);
 
 
-    std::cout << "Ready...\n";
+    std::cout << "Running '" << command << "' on SSH...\n";
 
     /*
      * Accept inputs until disconnected
@@ -65,36 +52,12 @@ int main(void){
          * LIBSSH2_ERROR_EAGAIN is not error.
          */
         if(n_obuf_read < 0 && n_obuf_read != LIBSSH2_ERROR_EAGAIN){
-            printf("RE(%ld)", n_obuf_read);
+            fprintf(stderr, "RE(%ld)", n_obuf_read);
         }
-
-
-        /*
-         * Input from stdin and send it to remote SSH
-         */
-
-        FD_SET(STDIN_FILENO, &readfds);
-        if(select(1, &readfds, NULL, NULL, &timeout)){
-            int c = getchar();
-            if(c > 0){ 
-                auto st = ssh->write(char(c));
-                if(st < 0) printf("WE(%ld)", st);
-            }
-        }
-
 
         usleep(16667);
     }
 
-    printf("Disconnected.\n");
-
-
-    /*
-     * Restore STDIN buffering options
-     */
-    system("stty echo");
-    system("stty icanon");
-
-
+    printf("(END)\n");
     return 0;
 }
