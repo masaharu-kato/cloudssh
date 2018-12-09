@@ -16,14 +16,6 @@ namespace libssh2 {
                 throw new std::runtime_error("Unable to open a session\n");
              }
         }
-        
-        // Channel(LIBSSH2_SESSION *_session) : 
-        //     session(nullptr)
-        // {
-        //      if(!(channel = libssh2_channel_open_session(_session))) {
-        //         throw new std::runtime_error("Unable to open a session\n");
-        //      }
-        // }
 
     public:
         ~Channel() {
@@ -34,12 +26,6 @@ namespace libssh2 {
         static auto create(std::shared_ptr<Session> session) {
             return std::shared_ptr<Channel>(new Channel(session));
         }
-        
-        // static auto create(LIBSSH2_SESSION *session) {
-        //     return std::shared_ptr<Channel>(new Channel(session));
-        // }
-
-        
 
         /* 
          * Some environment variables may be set,
@@ -76,7 +62,19 @@ namespace libssh2 {
         }
 
         auto read(std::vector<char>& out){
-		    return libssh2_channel_read(channel, out.data(), out.capacity());
+            return libssh2_channel_read(channel, out.data(), out.size());
+        }
+
+        void set_blocking() {
+            libssh2_channel_set_blocking(channel, 1);
+        }
+
+        void unset_blocking() {
+            libssh2_channel_set_blocking(channel, 0);
+        }
+
+        auto is_eof() {
+            return libssh2_channel_eof(channel);
         }
 
         operator LIBSSH2_CHANNEL*() const {
